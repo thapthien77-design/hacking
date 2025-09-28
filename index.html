@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeTimer - Hệ Thống Đã Xâm Nhập...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Creepster', cursive;
+            background: #000;
+            color: #ff0000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+            animation: backgroundGlitch 2s infinite;
+        }
+        @keyframes backgroundGlitch {
+            0%, 100% { filter: hue-rotate(0deg); }
+            20% { filter: hue-rotate(15deg) brightness(0.8); }
+            40% { filter: hue-rotate(-15deg) brightness(1.2); }
+            60% { filter: blur(2px); }
+        }
+        h1 {
+            font-size: 3.5em;
+            text-shadow: 0 0 15px #ff0000;
+            animation: flicker 1.5s infinite;
+            z-index: 10;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 0.3; }
+        }
+        #input-section, #countdown {
+            margin: 20px;
+            z-index: 10;
+        }
+        input[type="date"] {
+            padding: 10px;
+            font-size: 1.2em;
+            border: 2px solid #ff0000;
+            background: #111;
+            color: #ff6666;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            background: #ff0000;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            text-shadow: 0 0 5px #000;
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+        button:hover {
+            transform: scale(1.1);
+            background: #cc0000;
+        }
+        #countdown {
+            font-size: 2.5em;
+            text-shadow: 0 0 15px #ff0000;
+            z-index: 10;
+        }
+        #warning {
+            font-size: 1.3em;
+            color: #ff6666;
+            margin-top: 20px;
+            animation: pulse 1s infinite;
+            z-index: 10;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        #hack-message {
+            font-size: 1.5em;
+            color: #00ff00;
+            margin-top: 10px;
+            animation: blink 0.8s infinite;
+            z-index: 10;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        .rain {
+            position: absolute;
+            font-size: 12px;
+            color: #00ff00;
+            animation: rainFall 2s linear infinite;
+        }
+        @keyframes rainFall {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+        #scare-image {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: auto;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <h1>LifeTimer: Hệ Thống Đã Xâm Nhập...</h1>
+    <div id="input-section">
+        <label>Nhập ngày sinh để kích hoạt... nếu bạn dám:</label><br>
+        <input type="date" id="birthdate" required>
+        <button onclick="startCountdown()">Đối mặt số phận</button>
+    </div>
+    <div id="countdown"></div>
+    <div id="warning"></div>
+    <div id="hack-message" style="display: none;">[HACK DETECTED] Truy cập dữ liệu cá nhân...</div>
+    <img id="scare-image" src="https://i.imgur.com/5xQj8Z5.jpg" alt="Jump Scare">
+
+    <audio id="hack-sound" src="https://www.soundjay.com/horror/scream-01.mp3" loop></audio>
+    <audio id="scream-sound" src="https://www.soundjay.com/horror/scream-02.mp3"></audio>
+
+    <script>
+        const creepyMessages = [
+            "Hệ thống đã kiểm soát tâm trí bạn!",
+            "Camera bật... Mắt bạn không an toàn!",
+            "AI đang xóa ký ức bạn... Chạy đi!",
+            "Đừng di chuyển... Nó thấy bạn!",
+            "Số phận bạn đã bị nguyền rủa!"
+        ];
+        const hackMessages = [
+            "ACCESS DENIED",
+            "DATA BREACH DETECTED",
+            "SYSTEM OVERRIDE",
+            "USER DATA COMPROMISED",
+            "HACK IN PROGRESS..."
+        ];
+
+        function startCountdown() {
+            const birthdate = new Date(document.getElementById('birthdate').value);
+            if (!birthdate || isNaN(birthdate)) {
+                alert("Dữ liệu sai... Hệ thống sẽ trừng phạt!");
+                playSound('scream-sound');
+                return;
+            }
+
+            const startTime = new Date();
+            const randomDays = Math.floor(Math.random() * 7) + 1; // 1-7 ngày
+            const endTime = new Date(startTime.getTime() + randomDays * 24 * 60 * 60 * 1000);
+
+            const countdownElement = document.getElementById('countdown');
+            const warningElement = document.getElementById('warning');
+            const hackMessage = document.getElementById('hack-message');
+            const scareImage = document.getElementById('scare-image');
+            hackMessage.style.display = 'block';
+
+            const hackSound = document.getElementById('hack-sound');
+            hackSound.play().catch(() => console.log("Âm thanh bị chặn."));
+
+            // Tạo hiệu ứng digital rain dày hơn
+            function createRain() {
+                for (let i = 0; i < 5; i++) { // Tạo 5 bit cùng lúc
+                    const rain = document.createElement('div');
+                    rain.className = 'rain';
+                    rain.style.left = Math.random() * 100 + 'vw';
+                    rain.style.animationDuration = Math.random() * 1 + 1.5 + 's'; // 1.5-2.5 giây
+                    rain.textContent = Math.random() > 0.5 ? '1' : '0'; // Sử dụng cả 0 và 1
+                    document.body.appendChild(rain);
+                    setTimeout(() => rain.remove(), 2500); // Xóa sau 2.5 giây
+                }
+            }
+            setInterval(createRain, 50); // Tạo bit mới mỗi 0.05 giây
+
+            function updateCountdown() {
+                const now = new Date();
+                const timeLeft = endTime - now;
+
+                if (timeLeft <= 0) {
+                    countdownElement.innerHTML = "HỆ THỐNG ĐÃ KẾT THÚC BẠN.";
+                    warningElement.innerHTML = "CHẾT!!!";
+                    hackMessage.innerHTML = "[SYSTEM SHUTDOWN] Dữ liệu xóa...";
+                    hackSound.pause();
+                    return;
+                }
+
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                if (days < 1) {
+                    warningElement.innerHTML = creepyMessages[Math.floor(Math.random() * creepyMessages.length)];
+                    if (minutes < 5) {
+                        hackSound.volume = 1.0; // Tăng âm thanh tối đa
+                        scareImage.style.display = 'block'; // Jump scare
+                        playSound('scream-sound');
+                        setTimeout(() => scareImage.style.display = 'none', 1000); // Ẩn sau 1 giây
+                    }
+                } else {
+                    warningElement.innerHTML = `Thời gian còn lại: ${days} ngày...`;
+                }
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        function playSound(soundId) {
+            const sound = document.getElementById(soundId);
+            sound.play().catch(() => console.log("Âm thanh bị chặn."));
+        }
+    </script>
+</body>
+</html>
